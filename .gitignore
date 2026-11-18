@@ -1,0 +1,15 @@
+# Артефакти збірки
+build/
+dist/
+*.spec
+__pycache__/
+*.pyc
+
+# Завантажуються скриптами get_wordlists.bat / get_dictionaries.bat (великі, мають власні ліцензії)
+words_uk.txt
+words_ru.txt
+words_en.txt
+dictionaries/
+
+# Локальні дані користувача
+learned.txt
