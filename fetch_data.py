@@ -17,6 +17,12 @@ import os
 import sys
 import urllib.request
 
+for _s in (sys.stdout, sys.stderr):      # консоль Windows може бути не в UTF-8
+    try:
+        _s.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 WORDS_BASE = "https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018"
 DICT_BASE = "https://raw.githubusercontent.com/LibreOffice/dictionaries/master"
