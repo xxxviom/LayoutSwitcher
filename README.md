@@ -21,31 +21,43 @@
 | Пауза/відновлення | подвійний клік по іконці в треї |
 | Меню | правий клік по іконці в треї |
 
-## Запуск зі скрипта
+## Встановлення (для користувачів)
+
+1. Відкрийте [Releases](https://github.com/xxxviom/LayoutSwitcher/releases/latest) і завантажте `LayoutSwitcher-Setup.exe`.
+2. Запустіть його й натискайте «Далі». Права адміністратора не потрібні.
+
+Усе потрібне вже всередині інсталятора: програма, словники Hunspell і частотні списки слів. Нічого
+запускати вручну й донавантажувати не треба. Програма сама стартує після встановлення, а за бажанням
+і разом з Windows.
+
+Windows SmartScreen може показати попередження «Невідомий видавець», бо файл не підписаний
+сертифікатом. Натисніть «Докладніше», потім «Все одно виконати».
+
+## Запуск зі скрипта (для розробників)
 
 ```
 py layout_switcher.py
 ```
 
-Потрібен Python 3.9+ (python.org) на Windows.
+Потрібен Python 3.9+ (python.org) на Windows. Для повної точності один раз виконайте `py fetch_data.py`:
+він завантажить `words_uk.txt`, `words_ru.txt`, `words_en.txt` і папку `dictionaries/` поруч зі скриптом.
+Ці файли великі й мають власні ліцензії ([THIRD_PARTY.md](THIRD_PARTY.md)), тому в репозиторій не входять.
 
-## Словники (необов'язково, але рекомендовано)
+## Збірка інсталятора
 
-Запустіть один раз, файли з'являться поруч зі скриптом:
+Локально: `build.bat` завантажує дані, збирає `dist\LayoutSwitcher.exe` через PyInstaller і, якщо
+встановлено [Inno Setup 6](https://jrsoftware.org/isinfo.php), `dist\LayoutSwitcher-Setup.exe`.
 
-- `get_wordlists.bat` завантажує частотні списки `words_uk.txt`, `words_ru.txt`, `words_en.txt`
-  (hermitdave/FrequencyWords, OpenSubtitles 2018, CC-BY-SA 4.0).
-- `get_dictionaries.bat` завантажує Hunspell-словники у папку `dictionaries/`
-  (репозиторій LibreOffice dictionaries, дивіться ліцензії там).
+Реліз: GitHub Actions (`.github/workflows/release.yml`) збирає інсталятор і додає його до релізу, коли
+пушиться тег виду `v1.0.0`:
 
-Ці файли великі й мають власні ліцензії, тому в репозиторій не входять (див. `.gitignore`).
+```
+git tag v1.0.0
+git push origin v1.0.0
+```
 
-## Збірка
-
-1. `build.bat` збирає `dist\LayoutSwitcher.exe` через PyInstaller.
-2. Для інсталятора відкрийте `installer.iss` в Inno Setup 6 і натисніть Compile. Результат: `dist\LayoutSwitcher-Setup.exe`.
-
-Поруч з `LayoutSwitcher.exe` тримайте `blacklist.txt`, `words_*.txt` і папку `dictionaries`.
+Вручну можна запустити збірку на вкладці Actions (кнопка Run workflow): інсталятор з'явиться
+в артефактах запуску без публікації релізу.
 
 ## Приватність
 

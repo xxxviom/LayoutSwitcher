@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Завантажити словники й списки слів
+        run: python fetch_data.py
+
+      - name: Зібрати LayoutSwitcher.exe
+        run: |
+          python -m pip install --upgrade pyinstaller
+          python -m PyInstaller --onefile --noconsole --clean --name LayoutSwitcher layout_switcher.py
+
+      - name: Встановити Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Зібрати інсталятор
+        shell: pwsh
+        run: |
+          $ver = if ("${{ github.ref_type }}" -eq "tag") { "${{ github.ref_name }}".TrimStart("v") } else { "0.0.0-dev" }
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$ver" installer.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Get-Item dist\LayoutSwitcher-Setup.exe | Format-List Name, Length
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LayoutSwitcher-Setup
+          path: dist/LayoutSwitcher-Setup.exe
+
+      - name: Опублікувати реліз
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/LayoutSwitcher-Setup.exe
+          generate_release_notes: true
